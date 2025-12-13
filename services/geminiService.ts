@@ -16,7 +16,7 @@ if (!apiKey) {
 const API_URL = 'https://api.vectorengine.ai/v1/chat/completions';
 
 // 3. 模型名称 (你的分组是 Gemini，使用 1.5-flash 最稳)
-const modelId = "gemini-3-pro-image-preview"; 
+const modelId = "gemini-2.5-flash"; 
 
 export const analyzePart = async (cameraName: string, partName: string, lang: Language): Promise<AIAnalysisResult> => {
   
