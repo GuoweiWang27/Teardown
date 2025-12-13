@@ -10,7 +10,6 @@ interface CameraModel3DProps {
   onPartSelect: (part: CameraPart) => void;
   selectedPartId: string | null;
   lang: Language;
-  scale: number;
 }
 
 interface ErrorBoundaryProps {
@@ -107,7 +106,7 @@ const MATERIALS = {
 };
 
 // --- REAL GLTF RENDERING (SMART ENGINE) ---
-const RealGLTFModel: React.FC<CameraModel3DProps & { url: string }> = ({ model, explosionLevel, onPartSelect, selectedPartId, url, lang, scale }) => {
+const RealGLTFModel: React.FC<CameraModel3DProps & { url: string }> = ({ model, explosionLevel, onPartSelect, selectedPartId, url, lang }) => {
   const { scene } = useGLTF(url);
   const clonedScene = useMemo(() => scene.clone(), [scene]);
   
@@ -284,7 +283,7 @@ const RealGLTFModel: React.FC<CameraModel3DProps & { url: string }> = ({ model, 
         'top' places the bottom of the bounding box on the ground plane (y=0).
       */}
       <Center top>
-        <primitive object={clonedScene} scale={[modelScale * scale, modelScale * scale, modelScale * scale]} />
+        <primitive object={clonedScene} scale={[modelScale, modelScale, modelScale]} />
       </Center>
     </group>
   );
@@ -371,10 +370,10 @@ const HighFidelityPart: React.FC<{ part: CameraPart; explosionLevel: number; isS
 };
 
 // Extracted for reuse as fallback
-const ProceduralModel: React.FC<CameraModel3DProps> = ({ model, explosionLevel, onPartSelect, selectedPartId, lang, scale }) => {
+const ProceduralModel: React.FC<CameraModel3DProps> = ({ model, explosionLevel, onPartSelect, selectedPartId, lang }) => {
   const modelParts = model.parts || [];
   return (
-    <group scale={[scale, scale, scale]}>
+    <group>
       {modelParts.map((part) => (
         <HighFidelityPart
           key={part.id}

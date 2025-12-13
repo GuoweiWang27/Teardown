@@ -20,8 +20,7 @@ export const TRANSLATIONS = {
     oemPartNo: "OEM PART NO.",
     noAnalysis: "No analysis data available.",
     helpTooltip: "Use slider to dismantle · Click parts to analyze",
-    selectedComponent: "Selected Component",
-    scaleLabel: "Scale"
+    selectedComponent: "Selected Component"
   },
   cn: {
     title: "拆镜实验室",
@@ -42,8 +41,7 @@ export const TRANSLATIONS = {
     oemPartNo: "原厂零件号",
     noAnalysis: "暂无分析数据。",
     helpTooltip: "拖动滑块拆解 · 点击部件进行分析",
-    selectedComponent: "选中部件",
-    scaleLabel: "缩放"
+    selectedComponent: "选中部件"
   }
 };
 
