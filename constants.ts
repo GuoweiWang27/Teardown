@@ -65,10 +65,10 @@ export const CAMERA_MODELS: CameraModel[] = [
     techHighlight_cn: '模块化设计, 镜间快门',
     // ==============================================================
     // 修改重点：
-    // 1. modelUrl: 指向您放入 public/models 下的文件名
+    // 1. modelUrl: 使用 GitHub raw 链接加载大文件（避免 Cloudflare 25MB 限制）
     // 2. parts: 设为空数组 []。这将激活 "Smart Engine"，自动识别零件并生成爆炸图。
     // ==============================================================
-    modelUrl: '/models/500cm.glb', 
+    modelUrl: 'https://raw.githubusercontent.com/GuoweiWang27/Teardown/main/public/models/500cm.glb',
     parts: [] 
   },
   {
