@@ -10,9 +10,10 @@ interface CameraCanvasProps {
   onPartSelect: (part: CameraPart) => void;
   selectedPartId: string | null;
   lang: Language;
+  scale: number;
 }
 
-const CameraCanvas: React.FC<CameraCanvasProps> = ({ model, explosionLevel, onPartSelect, selectedPartId, lang }) => {
+const CameraCanvas: React.FC<CameraCanvasProps> = ({ model, explosionLevel, onPartSelect, selectedPartId, lang, scale }) => {
   return (
     <div className="w-full h-full bg-slate-900 absolute inset-0 z-0">
       {/* Increased FOV to 50 for a slightly wider angle to accommodate exploded parts */}
@@ -30,6 +31,7 @@ const CameraCanvas: React.FC<CameraCanvasProps> = ({ model, explosionLevel, onPa
             onPartSelect={onPartSelect} 
             selectedPartId={selectedPartId}
             lang={lang}
+            scale={scale}
           />
           
           <ContactShadows position={[0, -2.5, 0]} opacity={0.5} scale={15} blur={2.5} far={4} />

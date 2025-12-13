@@ -3,6 +3,7 @@ import { CAMERA_MODELS } from './constants';
 import { CameraModel, CameraPart, AIAnalysisResult, Language } from './types';
 import CameraCanvas from './components/CameraCanvas';
 import ExplosionSlider from './components/ExplosionSlider';
+import ScaleController from './components/ScaleController';
 import InfoPanel from './components/InfoPanel';
 import { analyzePart } from './services/geminiService';
 import { t } from './translations';
@@ -43,6 +44,7 @@ const CameraImage: React.FC<{ camera: CameraModel }> = ({ camera }) => {
 const App: React.FC = () => {
   const [selectedCamera, setSelectedCamera] = useState<CameraModel | null>(null);
   const [explosionLevel, setExplosionLevel] = useState<number>(0);
+  const [modelScale, setModelScale] = useState<number>(1.0);
   const [selectedPart, setSelectedPart] = useState<CameraPart | null>(null);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
   const [loadingAI, setLoadingAI] = useState<boolean>(false);
@@ -53,6 +55,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (selectedCamera) {
       setExplosionLevel(0);
+      setModelScale(1.0);
       setSelectedPart(null);
       setAiAnalysis(null);
     }
@@ -201,6 +204,7 @@ const App: React.FC = () => {
             onPartSelect={handlePartSelect} 
             selectedPartId={selectedPart?.id || null} 
             lang={lang}
+            scale={modelScale}
           />
           
           <div className="absolute top-24 left-6 z-10 pointer-events-none">
@@ -209,6 +213,8 @@ const App: React.FC = () => {
           </div>
 
           <ExplosionSlider value={explosionLevel} onChange={setExplosionLevel} lang={lang} />
+          
+          <ScaleController scale={modelScale} onScaleChange={setModelScale} lang={lang} />
           
           <InfoPanel 
             part={selectedPart} 
