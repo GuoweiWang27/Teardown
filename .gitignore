@@ -15,8 +15,8 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Large 3D model files - use external storage or Git LFS
-public/models/*.glb
+# Large 3D model files - uploaded manually via GitHub web interface
+# public/models/*.glb
 
 # Editor directories and files
 .vscode/*
