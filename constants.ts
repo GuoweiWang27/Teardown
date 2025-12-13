@@ -68,7 +68,7 @@ export const CAMERA_MODELS: CameraModel[] = [
     // 1. modelUrl: 使用 GitHub raw 链接加载大文件（避免 Cloudflare 25MB 限制）
     // 2. parts: 设为空数组 []。这将激活 "Smart Engine"，自动识别零件并生成爆炸图。
     // ==============================================================
-    modelUrl: 'https://GuoweiWang27.github.io/Teardown/models/500cm.glb',
+    modelUrl: 'https://guoweiwang27.github.io/Teardown/',
     parts: [] 
   },
   {
