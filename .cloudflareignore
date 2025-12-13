@@ -1,0 +1,4 @@
+# Cloudflare Pages 部署排除文件
+# 排除超过 25MB 限制的大文件
+public/models/*.glb
+
