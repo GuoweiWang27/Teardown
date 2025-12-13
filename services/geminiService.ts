@@ -1,10 +1,18 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { AIAnalysisResult, Language } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// 1. 读取 API Key (确保是 string)
+const apiKey = (import.meta.env.VITE_GEMINI_API_KEY as string) || "";
+
+if (!apiKey) {
+  console.error("🚨 致命错误：未找到 VITE_GEMINI_API_KEY，请检查 Cloudflare 环境变量设置！");
+}
+
+// 2. 初始化 SDK
+const ai = new GoogleGenAI({ apiKey: apiKey });
 
 export const analyzePart = async (cameraName: string, partName: string, lang: Language): Promise<AIAnalysisResult> => {
-  const modelId = "gemini-2.5-flash"; // Fast and capable for text tasks
+  const modelId = "gemini-2.5-flash"; 
   
   const langInstruction = lang === 'cn' 
     ? "Provide all responses in Simplified Chinese." 
@@ -31,24 +39,25 @@ export const analyzePart = async (cameraName: string, partName: string, lang: La
       config: {
         systemInstruction: systemPrompt,
         responseMimeType: "application/json",
+        // ✅ 核心修复：直接使用字符串定义类型，不再依赖 import 导入
         responseSchema: {
-          type: Type.OBJECT,
+          type: "OBJECT",
           properties: {
             standardName: {
-              type: Type.STRING,
-              description: "The inferred official technical name of the part (e.g. 'Shutter Speed Dial' instead of 'Cylinder.005'). Include English name if in Chinese mode.",
+              type: "STRING",
+              description: "The inferred official technical name of the part.",
             },
             functionPrinciple: {
-              type: Type.STRING,
+              type: "STRING",
               description: "A concise explanation (2-3 sentences) of what this part does and how it works physically.",
             },
             specifics: {
-              type: Type.STRING,
-              description: "Specific details about this part in this particular camera model (e.g., material, magnification, historical significance).",
+              type: "STRING",
+              description: "Specific details about this part in this particular camera model.",
             },
             partNumber: {
-              type: Type.STRING,
-              description: "A plausible or real OEM part number (e.g., 'CG2-5000'). If unknown, estimate a format like 'GEN-001'.",
+              type: "STRING",
+              description: "A plausible or real OEM part number.",
             },
           },
           required: ["standardName", "functionPrinciple", "specifics"],
@@ -56,8 +65,11 @@ export const analyzePart = async (cameraName: string, partName: string, lang: La
       },
     });
 
-    if (response.text) {
-      return JSON.parse(response.text) as AIAnalysisResult;
+    // ✅ 这里的 text() 必须有括号
+    // response.text 是一个 getter 属性，不是方法
+    const text = response.text;
+    if (text) {
+      return JSON.parse(text) as AIAnalysisResult;
     }
     throw new Error("No text response from Gemini");
   } catch (error) {
