@@ -10,11 +10,18 @@ import { t } from './translations';
 // --- HELPER COMPONENT FOR IMAGES ---
 const CameraImage: React.FC<{ camera: CameraModel }> = ({ camera }) => {
   // Start by trying to load the local image based on ID
-  const [imgSrc, setImgSrc] = useState<string>(`/images/${camera.id}.jpg`);
+  // Try PNG first (actual format), then JPG as fallback
+  const [imgSrc, setImgSrc] = useState<string>(`/images/${camera.id}.png`);
+  const [triedJpg, setTriedJpg] = useState<boolean>(false);
 
   const handleError = () => {
-    // If local image is missing/broken, fallback to a clean text placeholder
-    // Using placehold.co with theme colors: Slate-800 bg, Cyan-400 text
+    // If PNG fails, try JPG
+    if (!triedJpg) {
+      setTriedJpg(true);
+      setImgSrc(`/images/${camera.id}.jpg`);
+      return;
+    }
+    // If both fail, use placeholder
     setImgSrc(`https://placehold.co/800x600/1e293b/22d3ee?text=${encodeURIComponent(camera.model)}&font=roboto`);
   };
 
