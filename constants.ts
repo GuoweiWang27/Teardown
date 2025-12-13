@@ -58,7 +58,7 @@ export const CAMERA_MODELS: CameraModel[] = [
   {
     id: 'hasselblad-500cm',
     brand: 'Hasselblad',
-    model: '500C/M',
+    model: '500C-M',
     description: 'The legendary modular medium format camera.',
     description_cn: '传奇的模块化中画幅相机。',
     techHighlight: 'Modular Design, Leaf Shutter',

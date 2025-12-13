@@ -405,10 +405,11 @@ const CameraModel3D: React.FC<CameraModel3DProps> = (props) => {
         modelName={props.model.model} 
         fallback={<ProceduralModel {...props} />}
       >
-       <RealGLTFModel 
-  {...props} 
-  url="https://github.com/GuoweiWang27/Teardown/releases/download/v1.0-assets/500cm.glb" 
-/>
+        <RealGLTFModel 
+          {...props} 
+          // ✅ 修复：将 URL 设置为从 props.model 中传入的值
+          url={props.model.modelUrl} 
+        />
       </ModelErrorBoundary>
     );
   }
