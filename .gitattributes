@@ -1,5 +1,5 @@
 # Git LFS 配置文件
 # 使用 Git LFS 管理大型 3D 模型文件
-# 临时禁用 LFS filter，因为 Git LFS 未正确安装
-# public/models/*.glb filter=lfs diff=lfs merge=lfs -text
+# 注意：如果 Git LFS 未安装，此配置会被忽略
+public/models/*.glb filter=lfs diff=lfs merge=lfs -text
 
