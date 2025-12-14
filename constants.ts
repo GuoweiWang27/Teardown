@@ -27,33 +27,13 @@ export const CAMERA_MODELS: CameraModel[] = [
     description_cn: 'AE-1 的指针式测光简化版本。',
     techHighlight: 'Match Needle Metering, FD Mount',
     techHighlight_cn: '指针重合测光, FD 卡口',
-    // UPDATED PATH: Pointing to the structured local folder
-    modelUrl: '/models/canon_at-1.glb',
-    // We define some key parts, but the "Smart Engine" will handle the rest automatically
-    parts: [
-      { 
-        id: 'lens-fd', 
-        name: 'Canon Lens FD 50mm 1:1.8', 
-        name_cn: '佳能 FD 50mm 1:1.8 镜头',
-        meshName: 'Lens_Group', // Try to name your main lens mesh "Lens_Group" in Blender if possible
-        type: 'cylinder', 
-        position: [0, 0, 1.2], 
-        scale: [1, 1, 1], 
-        color: '#111', 
-        explosionDirection: [0, 0, 2] 
-      },
-      {
-        id: 'body-main',
-        name: 'Main Body Chassis',
-        name_cn: '机身主体',
-        meshName: 'Body_Main',
-        type: 'box',
-        position: [0, 0, 0],
-        scale: [1, 1, 1], 
-        color: '#111',
-        explosionDirection: [0, 0, 0]
-      }
-    ]
+    // ==============================================================
+    // 修改重点：
+    // 1. modelUrl: 使用 Cloudflare R2 CDN 链接加载大文件（避免 Cloudflare 25MB 限制）
+    // 2. parts: 设为空数组 []。这将激活 "Smart Engine"，自动识别零件并生成爆炸图。
+    // ==============================================================
+    modelUrl: 'https://pub-f8d77afad3c343f4b5854e8f73932d50.r2.dev/canon-at-1.glb',
+    parts: [] 
   },
   {
     id: 'hasselblad-500cm',
