@@ -118,6 +118,47 @@ export const CAMERA_MODELS: CameraModel[] = [
     ]
   },
   {
+    // ==============================================================
+    // Sony A7 V（2025-12 发布）：部件级程序化爆炸图
+    // 结构蓝本：33MP 部分堆栈式传感器 + BIONZ XR2（集成 AI 处理）
+    // 7.5 档五轴 IBIS、3.68M 点 OLED EVF、NP-FZ100 电池、双 CFexpress A/SD
+    // 如日后拿到真实 GLB，填入 modelUrl 并保留 parts 作为 meshName 映射即可。
+    // ==============================================================
+    id: 'sony-a7v',
+    brand: 'Sony',
+    model: 'A7 V',
+    description: 'Hybrid full-frame all-rounder: a partially-stacked sensor paired with an AI processing engine.',
+    description_cn: '全画幅混合全能机型：部分堆栈式传感器，搭配集成 AI 处理的 BIONZ XR2。',
+    techHighlight: 'Partially-Stacked CMOS, BIONZ XR2 AI Engine, 7.5-Stop IBIS',
+    techHighlight_cn: '部分堆栈式 CMOS, BIONZ XR2 AI 引擎, 7.5 档五轴防抖',
+    parts: [
+      // 锚点：镁合金中框骨架（不动）
+      { id: 'chassis', name: 'Magnesium Alloy Chassis', name_cn: '镁合金中框骨架', type: 'box', position: [0, -0.1, 0], scale: [2.9, 1.7, 0.95], color: '#18181b', explosionDirection: [0, 0, 0] },
+      // 前组：前盖板 / E 卡口 / 焦平面快门 / 传感器 / IBIS
+      { id: 'front-plate', name: 'Front Cover Plate', name_cn: '前盖板', type: 'box', position: [0, -0.05, 0.46], scale: [2.7, 1.5, 0.1], color: '#232327', explosionDirection: [0.55, 0.2, 0.9] },
+      { id: 'e-mount', name: 'E-Mount Bayonet', name_cn: 'E 卡口卡板', type: 'cylinder', position: [0, -0.05, 0.5], rotation: [Math.PI/2, 0, 0], scale: [0.82, 0.12, 0.82], color: '#d4d4d8', explosionDirection: [-0.35, 0.15, 1.5] },
+      { id: 'shutter', name: 'Focal-Plane Shutter Unit', name_cn: '焦平面快门单元', type: 'box', position: [0, -0.02, 0.18], scale: [1.65, 1.15, 0.14], color: '#0a0a0c', explosionDirection: [0, 0.55, 0.75] },
+      { id: 'sensor', name: 'Partially-Stacked CMOS Sensor (33MP)', name_cn: '部分堆栈式 CMOS 传感器 (33MP)', type: 'box', position: [0, -0.02, 0.02], scale: [1.38, 0.92, 0.06], color: '#10b981', explosionDirection: [0, -0.35, 0.55] },
+      { id: 'ibis', name: 'IBIS Stabilization Unit (7.5-Stop)', name_cn: '五轴防抖组件 (7.5 档)', type: 'box', position: [0, -0.02, -0.22], scale: [1.7, 1.2, 0.28], color: '#f59e0b', explosionDirection: [0, -0.75, -0.35] },
+      // 后组：主板堆叠 / AI 板 / 散热片
+      { id: 'mainboard', name: 'Main Logic Board', name_cn: '主逻辑板', type: 'box', position: [0.15, 0.1, -0.42], scale: [2.3, 1.15, 0.08], color: '#047857', explosionDirection: [0.4, 0.35, -1.2] },
+      { id: 'ai-board', name: 'AI Processing Board (BIONZ XR2)', name_cn: 'AI 处理板 (BIONZ XR2)', type: 'box', position: [-0.55, 0.05, -0.32], scale: [1.1, 0.9, 0.06], color: '#065f46', explosionDirection: [-0.9, 0.45, -0.8] },
+      { id: 'heat-sink', name: 'Heat Sink', name_cn: '散热片', type: 'box', position: [0.75, -0.15, -0.3], scale: [0.85, 1.05, 0.32], color: '#a1a1aa', explosionDirection: [1.0, -0.3, -0.9] },
+      // 上部：EVF 与顶盖
+      { id: 'evf-block', name: 'OLED Electronic Viewfinder (3.68M Dot)', name_cn: 'OLED 电子取景器 (368 万点)', type: 'box', position: [0, 0.62, -0.1], scale: [1.25, 0.5, 0.85], color: '#0f0f12', explosionDirection: [0, 0.9, -0.6] },
+      { id: 'top-plate', name: 'Top Control Plate', name_cn: '顶部操控面板', type: 'box', position: [0, 0.95, 0], scale: [2.85, 0.25, 0.95], color: '#1c1c20', explosionDirection: [0, 1.4, 0] },
+      // 左右与背部
+      { id: 'grip-shell', name: 'Grip Shell', name_cn: '手柄外壳', type: 'box', position: [-1.3, -0.5, 0.1], scale: [0.72, 1.55, 1.0], color: '#202024', explosionDirection: [-1.1, -0.15, 0] },
+      { id: 'rear-panel', name: 'Rear Panel & Controls', name_cn: '背板与按键组', type: 'box', position: [0, 0.05, -0.58], scale: [2.6, 1.55, 0.08], color: '#202024', explosionDirection: [0, 0.15, -1.1] },
+      { id: 'flip-screen', name: 'Flip-Out Touch Screen', name_cn: '侧翻触摸屏', type: 'box', position: [0.1, -0.05, -0.68], scale: [1.5, 0.95, 0.06], color: '#3b82f6', explosionDirection: [0.15, -0.5, -1.6] },
+      // 底部：电池与卡槽
+      { id: 'battery', name: 'NP-FZ100 Battery', name_cn: 'NP-FZ100 电池', type: 'box', position: [-0.85, -0.85, -0.15], scale: [0.55, 0.32, 0.85], color: '#3f3f46', explosionDirection: [-0.75, -1.0, 0] },
+      { id: 'card-slots', name: 'Slot 1: SD / CFexpress Type A, Slot 2: SD', name_cn: '卡槽1: SD / CFexpress Type A 复合槽, 卡槽2: SD 槽', type: 'box', position: [0.85, -0.8, -0.3], scale: [0.85, 0.22, 0.5], color: '#27272a', explosionDirection: [0.8, -0.95, -0.35] },
+      // 前方：套机镜头
+      { id: 'lens', name: 'FE 28-70mm F3.5-5.6 OSS II Lens', name_cn: 'FE 28-70mm F3.5-5.6 OSS II 镜头', type: 'cylinder', position: [0, -0.02, 1.25], rotation: [Math.PI/2, 0, 0], scale: [0.88, 1.35, 0.88], color: '#27272a', explosionDirection: [0, 0, 2] }
+    ]
+  },
+  {
     id: 'rolleiflex',
     brand: 'Rolleiflex',
     model: '2.8F',
