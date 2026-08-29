@@ -121,7 +121,7 @@ export const CAMERA_MODELS: CameraModel[] = [
     // ==============================================================
     // Sony A7 V（2025-12 发布）：部件级程序化爆炸图
     // 结构蓝本：33MP 部分堆栈式传感器 + BIONZ XR2（集成 AI 处理）
-    // 7.5 档五轴 IBIS、3.68M 点 OLED EVF、NP-FZ100 电池、双 CFexpress A/SD
+    // 7.5 档五轴 IBIS、3.68M 点 OLED EVF、NP-FZ100 电池、卡槽1 支持 SD / CFexpress Type A、卡槽2 支持 SD
     // 如日后拿到真实 GLB，填入 modelUrl 并保留 parts 作为 meshName 映射即可。
     // ==============================================================
     id: 'sony-a7v',
