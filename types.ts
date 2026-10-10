@@ -1,43 +1,54 @@
 export type Language = 'en' | 'cn';
 
+export type LocalizedText = {
+  en: string;
+  cn: string;
+};
+
+export type CameraAvailability = 'live' | 'coming-soon';
+
 export interface CameraPart {
   id: string;
-  name: string;
-  name_cn?: string; // Chinese Name
-  // If loading a real 3D model, this matches the name of the mesh inside the GLB file
-  meshName?: string; 
-  // Fallback geometric representation
-  type: 'box' | 'cylinder' | 'sphere' | 'group';
-  position: [number, number, number];
-  rotation?: [number, number, number];
-  scale: [number, number, number];
-  color: string;
-  explosionDirection: [number, number, number]; // Vector [x, y, z] for movement
-  description?: string;
+  meshName: string;
+  label: LocalizedText;
+  summary: LocalizedText;
+  detail: LocalizedText;
+  evidence: LocalizedText;
+  explosionDirection: [number, number, number];
+}
+
+export interface CameraAttribution {
+  label: string;
+  url: string;
+  license: string;
 }
 
 export interface CameraModel {
   id: string;
   brand: string;
   model: string;
-  description: string;
-  description_cn?: string; // Chinese Description
-  techHighlight: string;
-  techHighlight_cn?: string; // Chinese Tech Highlight
-  // URL to the real .glb/.gltf file (e.g., '/models/hasselblad.glb')
-  modelUrl?: string; 
-  // Optional: If omitted, the Smart Engine will auto-detect all meshes in the 3D file
+  description: LocalizedText;
+  techHighlight: LocalizedText;
+  availability: CameraAvailability;
+  availabilityNote: LocalizedText;
+  imagePath: string;
+  modelUrl?: string;
   parts?: CameraPart[];
+  attribution?: CameraAttribution;
 }
 
-export interface AIAnalysisResult {
-  standardName: string;
-  functionPrinciple: string;
-  specifics: string;
-  partNumber?: string;
+export interface TeardownChapter {
+  id: string;
+  progress: number;
+  title: LocalizedText;
+  kicker: LocalizedText;
+  description: LocalizedText;
+  representedIn3D: boolean;
+  partIds: string[];
 }
 
-export interface ChatMessage {
-  role: 'user' | 'model';
-  text: string;
+export interface ReferenceSource {
+  label: LocalizedText;
+  url: string;
+  kind: 'model' | 'service-reference';
 }

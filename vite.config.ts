@@ -1,41 +1,35 @@
-import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import path from 'node:path';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
-      },
-      plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      },
-      build: {
-        rollupOptions: {
-          output: {
-            // 排除大文件，避免 Cloudflare Pages 25MB 限制
-            assetFileNames: (assetInfo) => {
-              // 排除超过 25MB 的文件
-              if (assetInfo.name && assetInfo.name.endsWith('.glb')) {
-                return 'models/[name][extname]';
-              }
-              return 'assets/[name]-[hash][extname]';
-            }
+export default defineConfig({
+  server: {
+    port: 3000,
+    host: '0.0.0.0',
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '.'),
+    },
+  },
+  build: {
+    chunkSizeWarningLimit: 1_100,
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) =>
+          assetInfo.name?.endsWith('.glb')
+            ? 'models/[name][extname]'
+            : 'assets/[name]-[hash][extname]',
+        manualChunks: (id) => {
+          if (id.includes('/node_modules/@react-three/') || id.includes('/node_modules/three')) {
+            return 'three-runtime';
           }
+          if (id.includes('/node_modules/react')) return 'react-runtime';
+          return undefined;
         },
-        // 增加 chunk 大小警告限制
-        chunkSizeWarningLimit: 1000
       },
-      // 在构建时排除大文件
-      publicDir: 'public',
-    };
+    },
+  },
+  publicDir: 'public',
 });

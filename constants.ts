@@ -1,238 +1,353 @@
-import { CameraModel } from './types';
+import {
+  CameraModel,
+  CameraPart,
+  LocalizedText,
+  ReferenceSource,
+  TeardownChapter,
+} from './types';
 
-// NOTE: LOCAL DEVELOPMENT INSTRUCTIONS
-// 1. Create a folder named "public" in your project root if it doesn't exist.
-// 2. Create a folder named "models" inside "public".
-// 3. Place your 'canon_at-1.glb' file inside 'public/models/'.
-// 4. The path below '/models/canon_at-1.glb' will now work automatically.
+const text = (en: string, cn: string): LocalizedText => ({ en, cn });
 
-// === NEW MODEL TEMPLATE (Copy & Paste this to add more) ===
-// {
-//   id: 'my-new-camera',
-//   brand: 'Brand',
-//   model: 'Model Name',
-//   description: 'Description here',
-//   techHighlight: 'Key tech',
-//   modelUrl: '/models/my_file.glb', // Just put the file in public/models/
-//   parts: [] // Leave empty! The Smart Engine will auto-detect meshes.
-// },
-// ==========================================================
+const COMING_SOON_NOTE = text(
+  'Reference card · teardown asset under review',
+  '资料卡 · 拆解资产审核中',
+);
+
+export const CANON_AT1_PARTS: CameraPart[] = [
+  {
+    id: 'body',
+    meshName: 'Body',
+    label: text('Body shell', '机身外壳'),
+    summary: text(
+      'The main exterior reference shell establishes the camera body, lens mount, and film-chamber proportions.',
+      '主外壳用于建立机身、镜头卡口和胶片仓的整体比例关系。',
+    ),
+    detail: text(
+      'This mesh remains the visual anchor while the mapped controls move away from it. The mirror box, shutter curtains, metering mechanism, and wiring are not separate geometry inside this asset.',
+      '拆解时它作为视觉锚点，其余已映射操控件从机身分离。当前资产没有把反光镜箱、快门帘、测光机构和线路做成独立几何体。',
+    ),
+    evidence: text(
+      'Directly mapped to the GLB mesh named “Body”; not a repair-grade internal CAD assembly.',
+      '直接映射 GLB 中名为“Body”的 mesh；不是维修级内部 CAD 总成。',
+    ),
+    explosionDirection: [0, 0, 0],
+  },
+  {
+    id: 'battery-check',
+    meshName: 'Battery_Check',
+    label: text('Battery-check control', '电池检测控制件'),
+    summary: text(
+      'This exterior control belongs to the camera’s battery-check interaction rather than the internal meter circuit itself.',
+      '这是相机电池检测操作对应的外部控制件，并不等同于内部测光电路。',
+    ),
+    detail: text(
+      'The AT-1 relies on battery power for metering. The 3D asset separates the exterior control, but it does not expose the switch contacts, meter electronics, or wiring behind it.',
+      'AT-1 的测光依赖电池供电。3D 资产分离了外部控制件，但没有呈现其后的开关触点、测光电子单元或线路。',
+    ),
+    evidence: text(
+      'Mapped to the source mesh “Battery_Check”; internal electrical construction is described, not modelled.',
+      '映射源模型 mesh“Battery_Check”；内部电气结构仅作说明，没有建模。',
+    ),
+    explosionDirection: [1.25, -0.25, 0.6],
+  },
+  {
+    id: 'spool',
+    meshName: 'Spool',
+    label: text('Film spool mesh', '胶片卷轴分件'),
+    summary: text(
+      'The spool-side mesh marks one endpoint of the 35 mm film path through the camera body.',
+      '卷轴侧分件标出了 35 mm 胶片穿过机身时的一端位置。',
+    ),
+    detail: text(
+      'A service teardown also distinguishes the winding shaft, sprocket, clutch, and torque-related parts. Those mechanisms are not separately represented by this single mesh.',
+      '维修拆解还会区分卷片轴、链轮、离合机构和扭矩相关零件；这些机构没有被这个单一 mesh 分别呈现。',
+    ),
+    evidence: text(
+      'Mapped to the source mesh “Spool”; treated as a location cue, not a complete transport assembly.',
+      '映射源模型 mesh“Spool”；只作为位置线索，不把它宣称为完整输片总成。',
+    ),
+    explosionDirection: [-1.55, 0.15, -0.35],
+  },
+  {
+    id: 'film-advance',
+    meshName: 'Film_Advance',
+    label: text('Film-advance control', '过片控制件'),
+    summary: text(
+      'The film-advance control transfers the user’s winding action toward the transport and shutter-cocking mechanisms.',
+      '过片控制件把用户的卷片动作传递给输片与快门上弦机构。',
+    ),
+    detail: text(
+      'Only the visible control is separated here. The gears, shaft, film counter coupling, and shutter-cocking linkage remain outside the model’s available geometry.',
+      '这里仅分离可见控制件；齿轮、轴、计数器联动和快门上弦连杆并不在现有模型几何体中。',
+    ),
+    evidence: text(
+      'Mapped to the source mesh “Film_Advance”; mechanism scope follows the repair-guide terminology.',
+      '映射源模型 mesh“Film_Advance”；机构范围按维修资料术语说明。',
+    ),
+    explosionDirection: [1.15, 1.35, -0.2],
+  },
+  {
+    id: 'shutter-release',
+    meshName: 'Shutter',
+    label: text('Shutter-release control mesh', '快门释放控制分件'),
+    summary: text(
+      'This mapped exterior control initiates the release sequence; it is not the focal-plane shutter curtain assembly.',
+      '这个已映射的外部控制件用于启动释放过程，并不是焦平面快门帘总成。',
+    ),
+    detail: text(
+      'The distinction matters: the service mechanism continues through internal levers and a shutter unit that the current GLB does not expose.',
+      '必须区分两者：维修结构还包含内部连杆和快门单元，而当前 GLB 没有把它们展开。',
+    ),
+    evidence: text(
+      'The source mesh is named “Shutter”; the safer label limits the claim to the visible release control.',
+      '源 mesh 名为“Shutter”；为避免误导，这里只把它标为可见的快门释放控制件。',
+    ),
+    explosionDirection: [0.45, 1.7, 0.75],
+  },
+  {
+    id: 'shutter-speed',
+    meshName: 'Shutter_Speed',
+    label: text('Shutter-speed control', '快门速度控制件'),
+    summary: text(
+      'The shutter-speed control selects the timing setting presented to the camera’s mechanical and electrical release system.',
+      '快门速度控制件选择送入相机机械与电气释放系统的计时档位。',
+    ),
+    detail: text(
+      'The separated mesh shows the external dial-level control only. Detents, contacts, timing electronics, and the shutter unit remain part of the unrepresented service structure.',
+      '分离 mesh 只呈现外部拨盘层级；定位机构、触点、计时电子单元和快门总成仍属于未呈现的维修结构。',
+    ),
+    evidence: text(
+      'Directly mapped to the GLB mesh “Shutter_Speed”; no OEM part number is inferred.',
+      '直接映射 GLB mesh“Shutter_Speed”；不推测原厂零件号。',
+    ),
+    explosionDirection: [-0.85, 1.55, 0.5],
+  },
+];
+
+export const CANON_AT1_CHAPTERS: TeardownChapter[] = [
+  {
+    id: 'assembled',
+    progress: 0,
+    title: text('Assembled reference', '整机基准'),
+    kicker: text('01 · Exterior baseline', '01 · 外观基准'),
+    description: text(
+      'Start with the verified exterior asset. Rotate the camera to understand the body, controls, mount, and film-chamber proportions before separating anything.',
+      '先从已核验的外观资产开始。旋转机身，理解外壳、操控件、卡口和胶片仓的比例，再进入分离步骤。',
+    ),
+    representedIn3D: true,
+    partIds: ['body'],
+  },
+  {
+    id: 'controls',
+    progress: 32,
+    title: text('External controls', '外部操控'),
+    kicker: text('02 · Real mapped meshes', '02 · 真实映射分件'),
+    description: text(
+      'Separate the controls that genuinely exist as individual meshes: battery check, film advance, shutter release, and shutter-speed control.',
+      '分离模型中确实独立存在的控制件：电池检测、过片、快门释放和快门速度控制。',
+    ),
+    representedIn3D: true,
+    partIds: ['battery-check', 'film-advance', 'shutter-release', 'shutter-speed'],
+  },
+  {
+    id: 'film-path',
+    progress: 66,
+    title: text('Film transport path', '胶片输送路径'),
+    kicker: text('03 · Structure guide', '03 · 结构导览'),
+    description: text(
+      'Use the spool mesh as a location cue, then follow the documented relationship between winding shaft, sprocket, film counter, and shutter cocking. These internals are not separate 3D geometry.',
+      '以卷轴 mesh 作为位置线索，再理解卷片轴、链轮、计数器与快门上弦之间的关系。这些内部机构并不是独立 3D 几何体。',
+    ),
+    representedIn3D: false,
+    partIds: ['spool', 'film-advance', 'body'],
+  },
+  {
+    id: 'service-boundary',
+    progress: 100,
+    title: text('Service boundary', '维修边界'),
+    kicker: text('04 · What is not modelled', '04 · 模型未呈现内容'),
+    description: text(
+      'The available meshes are now fully separated. Continue with the structure map to see which service assemblies require a future measured model instead of invented geometry.',
+      '现有 mesh 已全部展开。继续查看结构地图，明确哪些维修总成需要未来实测建模，而不能用虚构几何体替代。',
+    ),
+    representedIn3D: false,
+    partIds: [],
+  },
+];
+
+export const CANON_AT1_UNREPRESENTED = [
+  text('Mirror box mechanism', '反光镜箱机构'),
+  text('Focal-plane shutter curtains and timing unit', '焦平面快门帘与计时单元'),
+  text('Match-needle metering and electrical unit', '指针重合测光与电气单元'),
+  text('Film counter, winding shaft, sprocket, and clutch', '胶片计数器、卷片轴、链轮与离合机构'),
+  text('Internal contacts, levers, springs, and wiring', '内部触点、连杆、弹簧与线路'),
+];
+
+export const CANON_AT1_SOURCES: ReferenceSource[] = [
+  {
+    label: text('3D model by AleixoAlonso · CC BY 4.0', '3D 模型：AleixoAlonso · CC BY 4.0'),
+    url: 'https://sketchfab.com/3d-models/canon-at-1-retro-camera-9de66868d0f240e985da00c9480bfc82',
+    kind: 'model',
+  },
+  {
+    label: text('Canon AT-1 repair-guide index', 'Canon AT-1 维修资料目录'),
+    url: 'https://www.manualslib.com/manual/4389883/Canon-At-1.html',
+    kind: 'service-reference',
+  },
+  {
+    label: text('Genuine Canon service-manual listing', 'Canon 原厂维修手册信息页'),
+    url: 'https://uscamera.com/product/canon-at-1-service-manual/',
+    kind: 'service-reference',
+  },
+];
 
 export const CAMERA_MODELS: CameraModel[] = [
   {
     id: 'canon-at-1',
     brand: 'Canon',
     model: 'AT-1',
-    description: 'The simplified Match Needle version of the AE-1.',
-    description_cn: 'AE-1 的指针式测光简化版本。',
-    techHighlight: 'Match Needle Metering, FD Mount',
-    techHighlight_cn: '指针重合测光, FD 卡口',
-    // ==============================================================
-    // 修改重点：
-    // 1. modelUrl: 使用 Cloudflare R2 CDN 链接加载大文件（避免 Cloudflare 25MB 限制）
-    // 2. parts: 设为空数组 []。这将激活 "Smart Engine"，自动识别零件并生成爆炸图。
-    // ==============================================================
+    description: text(
+      'The simplified match-needle version of the AE-1.',
+      'AE-1 的指针式测光简化版本。',
+    ),
+    techHighlight: text('Match-needle metering, FD mount', '指针重合测光，FD 卡口'),
+    availability: 'live',
+    availabilityNote: text('Reviewed 3D teardown · 6 mapped meshes', '已审核 3D 拆解 · 6 个映射分件'),
+    imagePath: '/images/canon-at-1.png',
     modelUrl: 'https://pub-f8d77afad3c343f4b5854e8f73932d50.r2.dev/canon-at-1.glb',
-    parts: [] 
+    parts: CANON_AT1_PARTS,
+    attribution: {
+      label: 'Canon AT-1 Retro Camera by AleixoAlonso',
+      url: 'https://sketchfab.com/3d-models/canon-at-1-retro-camera-9de66868d0f240e985da00c9480bfc82',
+      license: 'CC BY 4.0',
+    },
   },
   {
     id: 'hasselblad-500cm',
     brand: 'Hasselblad',
     model: '500cm',
-    description: 'The legendary modular medium format camera.',
-    description_cn: '传奇的模块化中画幅相机。',
-    techHighlight: 'Modular Design, Leaf Shutter',
-    techHighlight_cn: '模块化设计, 镜间快门',
-    // ==============================================================
-    // 修改重点：
-    // 1. modelUrl: 使用 GitHub raw 链接加载大文件（避免 Cloudflare 25MB 限制）
-    // 2. parts: 设为空数组 []。这将激活 "Smart Engine"，自动识别零件并生成爆炸图。
-    // ==============================================================
-    modelUrl: 'https://pub-f8d77afad3c343f4b5854e8f73932d50.r2.dev/500cm.glb',
-    parts: [] 
+    description: text('The legendary modular medium-format camera.', '传奇的模块化中画幅相机。'),
+    techHighlight: text('Modular design, leaf shutter', '模块化设计，镜间快门'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/hasselblad-500cm.png',
   },
   {
     id: 'leica-m6',
     brand: 'Leica',
     model: 'M6',
-    description: 'The classic rangefinder used by street photographers.',
-    description_cn: '街头摄影师钟爱的经典旁轴相机。',
-    techHighlight: 'Rangefinder Mechanism, Cloth Shutter',
-    techHighlight_cn: '黄斑测距, 布帘快门',
-    parts: [
-      { id: 'chassis', name: 'Main Chassis', name_cn: '主底盘', type: 'box', position: [0, 0, 0], scale: [3, 1.5, 0.8], color: '#18181b', explosionDirection: [0,0,0] },
-      { id: 'top-plate', name: 'Top Plate (Brass)', name_cn: '黄铜顶盖', type: 'box', position: [0, 0.8, 0], scale: [3, 0.4, 0.8], color: '#d4d4d8', explosionDirection: [0, 1, 0] },
-      { id: 'bottom-plate', name: 'Bottom Plate', name_cn: '底盖', type: 'box', position: [0, -0.8, 0], scale: [3, 0.2, 0.8], color: '#d4d4d8', explosionDirection: [0, -1, 0] },
-      { id: 'lens-mount', name: 'M Mount', name_cn: 'M 卡口', type: 'cylinder', position: [0, 0, 0.5], rotation: [Math.PI/2, 0, 0], scale: [1, 0.2, 1], color: '#a1a1aa', explosionDirection: [0, 0, 0.5] },
-      { id: 'lens', name: 'Summicron 35mm', name_cn: 'Summicron 35mm 镜头', type: 'cylinder', position: [0, 0, 1], rotation: [Math.PI/2, 0, 0], scale: [0.7, 0.8, 0.7], color: '#27272a', explosionDirection: [0, 0, 1.5] },
-      { id: 'rangefinder', name: 'Rangefinder Mechanism', name_cn: '联动测距机构', type: 'box', position: [0.5, 0.5, -0.2], scale: [1.5, 0.4, 0.4], color: '#fbbf24', explosionDirection: [0, 0.5, -0.5] }
-    ]
+    description: text(
+      'The classic rangefinder used by street photographers.',
+      '街头摄影师钟爱的经典旁轴相机。',
+    ),
+    techHighlight: text('Rangefinder mechanism, cloth shutter', '黄斑测距，布帘快门'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/leica-m6.png',
   },
   {
     id: 'canon-5d4',
     brand: 'Canon',
     model: 'EOS 5D Mark IV',
-    description: 'The workhorse DSLR for professionals.',
-    description_cn: '专业摄影师的单反主力机型。',
-    techHighlight: 'Pentaprism, Mirror Box, Full Frame CMOS',
-    techHighlight_cn: '五棱镜, 反光镜箱, 全画幅 CMOS',
-    parts: [
-      { id: 'body', name: 'Magnesium Alloy Body', name_cn: '镁合金机身', type: 'box', position: [0, -0.2, 0], scale: [3, 2, 1.5], color: '#18181b', explosionDirection: [0,0,0] },
-      { id: 'prism', name: 'Pentaprism', name_cn: '五棱镜', type: 'box', position: [0, 1.2, 0], scale: [1.5, 0.8, 1.5], color: '#e4e4e7', explosionDirection: [0, 1.5, 0] },
-      { id: 'mirror', name: 'Main Mirror', name_cn: '主反光镜', type: 'box', position: [0, 0, 0.2], rotation: [Math.PI/4, 0, 0], scale: [1.2, 0.1, 0.8], color: '#a1a1aa', explosionDirection: [0, 0, 1] },
-      { id: 'sensor', name: 'Full Frame CMOS Sensor', name_cn: '全画幅 CMOS 传感器', type: 'box', position: [0, 0, -0.5], scale: [1.2, 0.8, 0.1], color: '#10b981', explosionDirection: [0, 0, -1] },
-      { id: 'lens', name: 'EF 24-70mm Lens', name_cn: 'EF 24-70mm 镜头', type: 'cylinder', position: [0, -0.2, 1.5], rotation: [Math.PI/2, 0, 0], scale: [1, 1.8, 1], color: '#27272a', explosionDirection: [0, 0, 2] },
-      { id: 'grip', name: 'Battery Grip', name_cn: '电池手柄', type: 'box', position: [-1.2, -0.5, 0.5], scale: [0.8, 1.5, 0.8], color: '#27272a', explosionDirection: [-1, 0, 0] }
-    ]
+    description: text('The workhorse DSLR for professionals.', '专业摄影师的单反主力机型。'),
+    techHighlight: text('Pentaprism, mirror box, full-frame CMOS', '五棱镜，反光镜箱，全画幅 CMOS'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/canon-5d4.png',
   },
   {
     id: 'sx-70',
     brand: 'Polaroid',
     model: 'SX-70',
-    description: 'A masterpiece of foldable engineering.',
-    description_cn: '可折叠工程学的杰作。',
-    techHighlight: 'Foldable Optical Path, Fresnel Mirror',
-    techHighlight_cn: '折叠光路, 菲涅尔反射镜',
-    parts: [
-      { id: 'base', name: 'Base / Film Door', name_cn: '底座 / 胶片仓门', type: 'box', position: [0, -1, 0], scale: [2.5, 0.2, 3], color: '#71717a', explosionDirection: [0, -1, 0] },
-      { id: 'bellows', name: 'Rubber Bellows', name_cn: '橡胶皮腔', type: 'box', position: [0, 0, 0], rotation: [-Math.PI/6, 0, 0], scale: [2.2, 1.5, 2], color: '#18181b', explosionDirection: [0, 0.5, 0] },
-      { id: 'mirror', name: 'Fresnel Mirror', name_cn: '菲涅尔反射镜', type: 'box', position: [0, -0.5, -0.5], rotation: [-Math.PI/6, 0, 0], scale: [2, 0.1, 2.5], color: '#3b82f6', explosionDirection: [0, 0, -1] },
-      { id: 'lens-block', name: 'Lens & Shutter Unit', name_cn: '镜头与快门单元', type: 'box', position: [0, 0.5, 1.2], scale: [2, 0.8, 0.5], color: '#a1a1aa', explosionDirection: [0, 0, 1] },
-      { id: 'viewfinder', name: 'Viewfinder Cap', name_cn: '取景器盖', type: 'box', position: [0, 1.2, -1], scale: [1, 0.4, 0.8], color: '#71717a', explosionDirection: [0, 1, -0.5] }
-    ]
+    description: text('A masterpiece of foldable engineering.', '可折叠工程学的杰作。'),
+    techHighlight: text('Foldable optical path, Fresnel mirror', '折叠光路，菲涅尔反射镜'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/sx-70.png',
   },
   {
     id: 'sony-a7iv',
     brand: 'Sony',
     model: 'A7 IV',
-    description: 'Modern hybrid mirrorless standard.',
-    description_cn: '现代混合微单的标准。',
-    techHighlight: 'IBIS Mechanism, Stacked Logic Board',
-    techHighlight_cn: '五轴防抖, 堆叠主板',
-    parts: [
-      { id: 'body', name: 'Main Chassis', name_cn: '相机骨架', type: 'box', position: [0, 0, 0], scale: [2.8, 1.8, 1], color: '#18181b', explosionDirection: [0,0,0] },
-      { id: 'ibis', name: 'IBIS Unit (5-Axis)', name_cn: 'IBIS 防抖组件', type: 'box', position: [0, 0, -0.2], scale: [1.5, 1, 0.3], color: '#f59e0b', explosionDirection: [0, 0, -0.5] },
-      { id: 'sensor', name: 'BSI CMOS Sensor', name_cn: '背照式 CMOS', type: 'box', position: [0, 0, -0.1], scale: [1.4, 0.9, 0.05], color: '#10b981', explosionDirection: [0, 0, 0.5] },
-      { id: 'motherboard', name: 'Main Logic Board', name_cn: '主逻辑板', type: 'box', position: [0, 0, -0.6], scale: [2.5, 1.5, 0.1], color: '#047857', explosionDirection: [0, 0, -1.5] },
-      { id: 'lens', name: 'E-Mount Lens', name_cn: 'E 卡口镜头', type: 'cylinder', position: [0, 0, 1], rotation: [Math.PI/2, 0, 0], scale: [0.9, 1.2, 0.9], color: '#27272a', explosionDirection: [0, 0, 2] }
-    ]
+    description: text('Modern hybrid mirrorless standard.', '现代混合微单的标准。'),
+    techHighlight: text('IBIS mechanism, stacked logic board', '五轴防抖，堆叠主板'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/sony-a7iv.png',
   },
   {
-    // ==============================================================
-    // Sony A7 V（2025-12 发布）：部件级程序化爆炸图
-    // 结构蓝本：33MP 部分堆栈式传感器 + BIONZ XR2（集成 AI 处理）
-    // 7.5 档五轴 IBIS、3.68M 点 OLED EVF、NP-FZ100 电池、卡槽1 支持 SD / CFexpress Type A、卡槽2 支持 SD
-    // 如日后拿到真实 GLB，填入 modelUrl 并保留 parts 作为 meshName 映射即可。
-    // ==============================================================
     id: 'sony-a7v',
     brand: 'Sony',
     model: 'A7 V',
-    description: 'Hybrid full-frame all-rounder: a partially-stacked sensor paired with an AI processing engine.',
-    description_cn: '全画幅混合全能机型：部分堆栈式传感器，搭配集成 AI 处理的 BIONZ XR2。',
-    techHighlight: 'Partially-Stacked CMOS, BIONZ XR2 AI Engine, 7.5-Stop IBIS',
-    techHighlight_cn: '部分堆栈式 CMOS, BIONZ XR2 AI 引擎, 7.5 档五轴防抖',
-    parts: [
-      // 锚点：镁合金中框骨架（不动）
-      { id: 'chassis', name: 'Magnesium Alloy Chassis', name_cn: '镁合金中框骨架', type: 'box', position: [0, -0.1, 0], scale: [2.9, 1.7, 0.95], color: '#18181b', explosionDirection: [0, 0, 0] },
-      // 前组：前盖板 / E 卡口 / 焦平面快门 / 传感器 / IBIS
-      { id: 'front-plate', name: 'Front Cover Plate', name_cn: '前盖板', type: 'box', position: [0, -0.05, 0.46], scale: [2.7, 1.5, 0.1], color: '#232327', explosionDirection: [0.55, 0.2, 0.9] },
-      { id: 'e-mount', name: 'E-Mount Bayonet', name_cn: 'E 卡口卡板', type: 'cylinder', position: [0, -0.05, 0.5], rotation: [Math.PI/2, 0, 0], scale: [0.82, 0.12, 0.82], color: '#d4d4d8', explosionDirection: [-0.35, 0.15, 1.5] },
-      { id: 'shutter', name: 'Focal-Plane Shutter Unit', name_cn: '焦平面快门单元', type: 'box', position: [0, -0.02, 0.18], scale: [1.65, 1.15, 0.14], color: '#0a0a0c', explosionDirection: [0, 0.55, 0.75] },
-      { id: 'sensor', name: 'Partially-Stacked CMOS Sensor (33MP)', name_cn: '部分堆栈式 CMOS 传感器 (33MP)', type: 'box', position: [0, -0.02, 0.02], scale: [1.38, 0.92, 0.06], color: '#10b981', explosionDirection: [0, -0.35, 0.55] },
-      { id: 'ibis', name: 'IBIS Stabilization Unit (7.5-Stop)', name_cn: '五轴防抖组件 (7.5 档)', type: 'box', position: [0, -0.02, -0.22], scale: [1.7, 1.2, 0.28], color: '#f59e0b', explosionDirection: [0, -0.75, -0.35] },
-      // 后组：主板堆叠 / AI 板 / 散热片
-      { id: 'mainboard', name: 'Main Logic Board', name_cn: '主逻辑板', type: 'box', position: [0.15, 0.1, -0.42], scale: [2.3, 1.15, 0.08], color: '#047857', explosionDirection: [0.4, 0.35, -1.2] },
-      { id: 'ai-board', name: 'AI Processing Board (BIONZ XR2)', name_cn: 'AI 处理板 (BIONZ XR2)', type: 'box', position: [-0.55, 0.05, -0.32], scale: [1.1, 0.9, 0.06], color: '#065f46', explosionDirection: [-0.9, 0.45, -0.8] },
-      { id: 'heat-sink', name: 'Heat Sink', name_cn: '散热片', type: 'box', position: [0.75, -0.15, -0.3], scale: [0.85, 1.05, 0.32], color: '#a1a1aa', explosionDirection: [1.0, -0.3, -0.9] },
-      // 上部：EVF 与顶盖
-      { id: 'evf-block', name: 'OLED Electronic Viewfinder (3.68M Dot)', name_cn: 'OLED 电子取景器 (368 万点)', type: 'box', position: [0, 0.62, -0.1], scale: [1.25, 0.5, 0.85], color: '#0f0f12', explosionDirection: [0, 0.9, -0.6] },
-      { id: 'top-plate', name: 'Top Control Plate', name_cn: '顶部操控面板', type: 'box', position: [0, 0.95, 0], scale: [2.85, 0.25, 0.95], color: '#1c1c20', explosionDirection: [0, 1.4, 0] },
-      // 左右与背部
-      { id: 'grip-shell', name: 'Grip Shell', name_cn: '手柄外壳', type: 'box', position: [-1.3, -0.5, 0.1], scale: [0.72, 1.55, 1.0], color: '#202024', explosionDirection: [-1.1, -0.15, 0] },
-      { id: 'rear-panel', name: 'Rear Panel & Controls', name_cn: '背板与按键组', type: 'box', position: [0, 0.05, -0.58], scale: [2.6, 1.55, 0.08], color: '#202024', explosionDirection: [0, 0.15, -1.1] },
-      { id: 'flip-screen', name: 'Flip-Out Touch Screen', name_cn: '侧翻触摸屏', type: 'box', position: [0.1, -0.05, -0.68], scale: [1.5, 0.95, 0.06], color: '#3b82f6', explosionDirection: [0.15, -0.5, -1.6] },
-      // 底部：电池与卡槽
-      { id: 'battery', name: 'NP-FZ100 Battery', name_cn: 'NP-FZ100 电池', type: 'box', position: [-0.85, -0.85, -0.15], scale: [0.55, 0.32, 0.85], color: '#3f3f46', explosionDirection: [-0.75, -1.0, 0] },
-      { id: 'card-slots', name: 'Slot 1: SD / CFexpress Type A, Slot 2: SD', name_cn: '卡槽1: SD / CFexpress Type A 复合槽, 卡槽2: SD 槽', type: 'box', position: [0.85, -0.8, -0.3], scale: [0.85, 0.22, 0.5], color: '#27272a', explosionDirection: [0.8, -0.95, -0.35] },
-      // 前方：套机镜头
-      { id: 'lens', name: 'FE 28-70mm F3.5-5.6 OSS II Lens', name_cn: 'FE 28-70mm F3.5-5.6 OSS II 镜头', type: 'cylinder', position: [0, -0.02, 1.25], rotation: [Math.PI/2, 0, 0], scale: [0.88, 1.35, 0.88], color: '#27272a', explosionDirection: [0, 0, 2] }
-    ]
+    description: text(
+      'A full-frame hybrid all-rounder built around a partially stacked sensor and integrated AI processing.',
+      '采用部分堆栈式传感器与集成 AI 处理的全画幅混合全能机型。',
+    ),
+    techHighlight: text(
+      'Partially stacked CMOS, BIONZ XR2, 7.5-stop IBIS',
+      '部分堆栈式 CMOS，BIONZ XR2，7.5 档五轴防抖',
+    ),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/sony-a7v.png',
   },
   {
     id: 'rolleiflex',
     brand: 'Rolleiflex',
     model: '2.8F',
-    description: 'The iconic twin lens reflex (TLR).',
-    description_cn: '标志性的双反相机。',
-    techHighlight: 'Twin Lens Path, Waist Level Finder',
-    techHighlight_cn: '双镜头光路, 腰平取景',
-    parts: [
-      { id: 'body', name: 'TLR Body', name_cn: '双反机身', type: 'box', position: [0, 0, 0], scale: [1.8, 3, 1.8], color: '#18181b', explosionDirection: [0,0,0] },
-      { id: 'view-lens', name: 'Viewing Lens (Top)', name_cn: '取景镜头 (上)', type: 'cylinder', position: [0, 0.8, 1], rotation: [Math.PI/2, 0, 0], scale: [0.6, 0.5, 0.6], color: '#a1a1aa', explosionDirection: [0, 0, 1.5] },
-      { id: 'take-lens', name: 'Taking Lens (Bottom)', name_cn: '摄影镜头 (下)', type: 'cylinder', position: [0, -0.5, 1], rotation: [Math.PI/2, 0, 0], scale: [0.7, 0.5, 0.7], color: '#a1a1aa', explosionDirection: [0, 0, 1.5] },
-      { id: 'finder', name: 'Folding Finder Hood', name_cn: '折叠取景罩', type: 'box', position: [0, 1.6, 0], scale: [1.8, 0.4, 1.8], color: '#27272a', explosionDirection: [0, 1, 0] },
-      { id: 'crank', name: 'Transport Crank', name_cn: '过片摇把', type: 'box', position: [1, -0.5, 0], scale: [0.2, 0.8, 0.2], color: '#d4d4d8', explosionDirection: [1, 0, 0] }
-    ]
+    description: text('The iconic twin-lens reflex camera.', '标志性的双反相机。'),
+    techHighlight: text('Twin-lens path, waist-level finder', '双镜头光路，腰平取景'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/rolleiflex.png',
   },
   {
     id: 'nikon-z9',
     brand: 'Nikon',
     model: 'Z9',
-    description: 'Flagship mirrorless without a mechanical shutter.',
-    description_cn: '取消了机械快门的旗舰微单。',
-    techHighlight: 'Sensor Shield, Stacked Sensor',
-    techHighlight_cn: '传感器防护盾, 堆栈式传感器',
-    parts: [
-      { id: 'body', name: 'Pro Body with Grip', name_cn: '一体化手柄机身', type: 'box', position: [0, -0.5, 0], scale: [3.2, 3, 1.2], color: '#18181b', explosionDirection: [0,0,0] },
-      { id: 'sensor-shield', name: 'Sensor Shield', name_cn: '传感器防护盾', type: 'box', position: [0, 0.5, 0.7], scale: [1.4, 1, 0.05], color: '#52525b', explosionDirection: [0, 0, 1] },
-      { id: 'sensor', name: 'Stacked CMOS', name_cn: '堆栈式 CMOS', type: 'box', position: [0, 0.5, 0.5], scale: [1.4, 1, 0.1], color: '#10b981', explosionDirection: [0, 0, -0.5] },
-      { id: 'lens', name: 'Z Mount Lens', name_cn: 'Z 卡口镜头', type: 'cylinder', position: [0, 0.5, 1.5], rotation: [Math.PI/2, 0, 0], scale: [1.1, 1.5, 1.1], color: '#27272a', explosionDirection: [0, 0, 2] }
-    ]
+    description: text(
+      'Flagship mirrorless camera without a mechanical shutter.',
+      '取消机械快门的旗舰微单。',
+    ),
+    techHighlight: text('Sensor shield, stacked sensor', '传感器防护盾，堆栈式传感器'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/nikon-z9.png',
   },
   {
     id: 'fuji-x100vi',
     brand: 'Fujifilm',
     model: 'X100VI',
-    description: 'Premium compact with a hybrid viewfinder.',
-    description_cn: '搭载混合取景器的高级卡片机。',
-    techHighlight: 'Hybrid Viewfinder, Leaf Shutter Lens',
-    techHighlight_cn: '混合取景器, 镜间快门镜头',
-    parts: [
-      { id: 'body', name: 'Compact Body', name_cn: '紧凑机身', type: 'box', position: [0, 0, 0], scale: [2.8, 1.6, 0.8], color: '#d4d4d8', explosionDirection: [0,0,0] },
-      { id: 'lens', name: '23mm Fixed Lens', name_cn: '23mm 固定镜头', type: 'cylinder', position: [0.4, 0, 0.8], rotation: [Math.PI/2, 0, 0], scale: [0.8, 0.8, 0.8], color: '#a1a1aa', explosionDirection: [0, 0, 1.5] },
-      { id: 'finder', name: 'Hybrid Viewfinder', name_cn: '混合取景器', type: 'box', position: [-1, 0.6, 0], scale: [0.6, 0.5, 0.8], color: '#18181b', explosionDirection: [0, 0.5, 0] },
-      { id: 'top-dials', name: 'Control Dials', name_cn: '控制拨盘', type: 'box', position: [0.8, 0.9, 0], scale: [1, 0.2, 0.5], color: '#a1a1aa', explosionDirection: [0, 1, 0] }
-    ]
+    description: text(
+      'Premium compact camera with a hybrid viewfinder.',
+      '搭载混合取景器的高级卡片机。',
+    ),
+    techHighlight: text('Hybrid viewfinder, leaf-shutter lens', '混合取景器，镜间快门镜头'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/fuji-x100vi.png',
   },
   {
     id: 'gopro-12',
     brand: 'GoPro',
     model: 'Hero 12',
-    description: 'The ultimate action camera.',
-    description_cn: '终极运动相机。',
-    techHighlight: 'High Density Stack, Heat Sink',
-    techHighlight_cn: '高密度堆叠, 散热片',
-    parts: [
-      { id: 'housing', name: 'Waterproof Housing', name_cn: '防水外壳', type: 'box', position: [0, 0, 0], scale: [1.5, 1, 0.8], color: '#18181b', explosionDirection: [0,0,0] },
-      { id: 'lens-module', name: 'Lens Module', name_cn: '镜头模组', type: 'box', position: [-0.4, 0, 0.5], scale: [0.5, 0.5, 0.2], color: '#27272a', explosionDirection: [0, 0, 1.5] },
-      { id: 'screen-front', name: 'Front LCD', name_cn: '前置液晶屏', type: 'box', position: [0.4, 0, 0.45], scale: [0.5, 0.5, 0.05], color: '#3b82f6', explosionDirection: [0, 0, 1] },
-      { id: 'screen-back', name: 'Touch Screen', name_cn: '后置触摸屏', type: 'box', position: [0, 0, -0.45], scale: [1.3, 0.8, 0.05], color: '#3b82f6', explosionDirection: [0, 0, -1] },
-      { id: 'battery', name: 'Enduro Battery', name_cn: 'Enduro 电池', type: 'box', position: [0, 0, 0], scale: [0.8, 0.8, 0.2], color: '#3f3f46', explosionDirection: [1.5, 0, 0] }
-    ]
+    description: text('A compact action camera built for harsh environments.', '面向严苛环境的紧凑运动相机。'),
+    techHighlight: text('High-density stack, heat management', '高密度堆叠，热管理'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/gopro-12.png',
   },
   {
     id: 'canon-ae1',
     brand: 'Canon',
     model: 'AE-1',
-    description: 'The camera that brought microprocessors to photography.',
-    description_cn: '将微处理器带入摄影领域的相机。',
-    techHighlight: 'Electronically Controlled Cloth Shutter',
-    techHighlight_cn: '电子控制布帘快门',
-    parts: [
-      { id: 'body', name: 'Plastic/Metal Body', name_cn: '塑料/金属机身', type: 'box', position: [0, 0, 0], scale: [3, 1.8, 1], color: '#d4d4d8', explosionDirection: [0,0,0] },
-      { id: 'lens', name: 'FD 50mm Lens', name_cn: 'FD 50mm 镜头', type: 'cylinder', position: [0, 0, 1], rotation: [Math.PI/2, 0, 0], scale: [0.8, 0.8, 0.8], color: '#18181b', explosionDirection: [0, 0, 1.5] },
-      { id: 'prism', name: 'Pentaprism Hump', name_cn: '五棱镜顶', type: 'box', position: [0, 1, 0], scale: [1.2, 0.5, 1], color: '#d4d4d8', explosionDirection: [0, 1, 0] },
-      { id: 'battery-door', name: 'Battery Door (4LR44)', name_cn: '电池仓门 (4LR44)', type: 'box', position: [-1.2, 0, 0.5], scale: [0.2, 0.5, 0.2], color: '#18181b', explosionDirection: [-1, 0, 1] }
-    ]
-  }
+    description: text(
+      'The camera that brought microprocessors to mass-market photography.',
+      '将微处理器带入大众摄影市场的相机。',
+    ),
+    techHighlight: text('Electronically controlled cloth shutter', '电子控制布帘快门'),
+    availability: 'coming-soon',
+    availabilityNote: COMING_SOON_NOTE,
+    imagePath: '/images/canon-ae1.png',
+  },
 ];
